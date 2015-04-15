@@ -1,15 +1,20 @@
 /*
-* Copyright (c) Unistar Corp. 2015. All Rights Reserved.
-* 
-* Unistar DEV Team
-*/
+ * Copyright (c) Unistar Corp. 2015. All Rights Reserved.
+ * 
+ * Unistar DEV Team
+ */
 package solid.humank.spring4.rest.anno.configuration;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-import javax.persistence.EntityManagerFactory;
+import solid.humank.spring4.rest.anno.schedule.MyBean;
 
 /**
  * Title: solid.humank.spring4.rest.anno.configuration.ApplicationConfig<br>
@@ -19,12 +24,21 @@ import javax.persistence.EntityManagerFactory;
  * @version: 1.0
  */
 @Configuration
-@EnableJpaRepositories("solid.humank.spring4.rest.repositories")
-class ApplicationConfiguration {
+@EnableScheduling
+public class ApplicationConfig implements SchedulingConfigurer {
 
-//    @Bean
-//    public EntityManagerFactory entityManagerFactory() {
-//
-//
-//    }
+    @Bean
+    public MyBean bean() {
+        return new MyBean();
+    }
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(taskExecutor());
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public Executor taskExecutor() {
+        return Executors.newScheduledThreadPool(10);
+    }
 }
