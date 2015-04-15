@@ -2,8 +2,8 @@
 <!DOCTYPE xml>
 <Configuration>
     <Properties>
-        <Property name="package">com.yx.acs</Property>
-        <Property name="fileName">acs.log</Property>
+        <Property name="package">solid.humank.spring4</Property>
+        <Property name="fileName">spring4-xmlconfig.log</Property>
         <Property name="pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5p] [%t] [%C{1}.%M] (%F:%L) - %m%n
         </Property>
     </Properties>
