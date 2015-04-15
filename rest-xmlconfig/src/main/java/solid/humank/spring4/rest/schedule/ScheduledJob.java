@@ -18,9 +18,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  */
 public class ScheduledJob extends QuartzJobBean {
 
-
     private AnotherBean anotherBean;
-
 
     @Override
     protected void executeInternal(JobExecutionContext arg0)

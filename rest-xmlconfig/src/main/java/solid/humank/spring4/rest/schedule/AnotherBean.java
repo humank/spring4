@@ -15,12 +15,11 @@ import org.springframework.stereotype.Component;
  * @version: 1.0
  */
 
-
 @Component("anotherBean")
 public class AnotherBean {
 
     public void printAnotherMessage() {
+
         System.out.println("I am called by Quartz jobBean using CronTriggerFactoryBean");
     }
-
 }
