@@ -6,6 +6,7 @@
 package solid.humank.spring4.rest.anno.configuration;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -17,7 +18,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @Configuration
 @EnableScheduling
-public class ApplicationConfig  {
+@Import(value = {PersistenceConfig.class, SchedulerConfig.class, WebConfig.class})
+public class ApplicationConfig {
 
 
 }

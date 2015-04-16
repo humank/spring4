@@ -7,13 +7,14 @@ package solid.humank.spring4.rest.anno.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.SchedulingConfigurer;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import solid.humank.spring4.rest.anno.schedule.MyBean;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import solid.humank.spring4.rest.anno.schedule.NewTestBean;
 
 /**
  * Title: solid.humank.spring4.rest.anno.configuration.SchedulerConfig<br>
@@ -23,25 +24,42 @@ import java.util.concurrent.Executors;
  * @version: 1.0
  */
 @Configuration
-@EnableScheduling
-public class SchedulerConfig implements SchedulingConfigurer {
+@EnableAsync
+@EnableScheduling()
+public class SchedulerConfig {
 
-    // for test usage :D
+    //@Bean
+//    public SchedulerFactoryBean setQuartzSettingProperties(){
+//        SchedulerFactoryBean sfb = new SchedulerFactoryBean();
+//        sfb.setConfigLocation(new ClassPathResource("quartz.properties"));
+//        return sfb;
+//    }
+
+
+    /**
+     * For Quartz usage..
+     * @return
+     */
     @Bean
-    public MyBean bean() {
-        return new MyBean();
+    public JobDetailFactoryBean jobDetailFactoryBean(){
+        JobDetailFactoryBean jfb = new JobDetailFactoryBean();
+        jfb.setJobClass(NewTestBean.class);
+        jfb.setGroup("kimGroup");
+        return jfb;
     }
 
-    @Override
-    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-
-        taskRegistrar.setScheduler(taskExecutor());
+    @Bean
+    public CronTriggerFactoryBean cronTriggerFactoryBean(){
+        CronTriggerFactoryBean ctfb = new CronTriggerFactoryBean();
+        ctfb.setJobDetail(jobDetailFactoryBean().getObject());
+        return ctfb;
     }
 
-    @Bean(destroyMethod = "shutdown")
-    public Executor taskExecutor() {
-        return Executors.newScheduledThreadPool(10);
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean(){
+        SchedulerFactoryBean sfb = new SchedulerFactoryBean();
+        sfb.setConfigLocation(new ClassPathResource("quartz.properties"));
+        sfb.setTriggers(cronTriggerFactoryBean().getObject());
+        return sfb;
     }
-
-
 }
