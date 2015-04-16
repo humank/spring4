@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloResource {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     public String sayHello(@PathVariable String name) {
-        String result="Hello "+name+" to dineshonjava.com!!!";
-        return result;
+
+        return "Hello "+name+" to dineshonjava.com!!!";
     }
 }
