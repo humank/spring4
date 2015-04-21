@@ -1,11 +1,19 @@
 /*
-* Copyright (c) Unistar Corp. 2015. All Rights Reserved.
-* 
-* Unistar DEV Team
-*/
+ * Copyright (c) Unistar Corp. 2015. All Rights Reserved.
+ * 
+ * Unistar DEV Team
+ */
 package solid.humank.spring4.rest.anno.schedule;
 
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.stereotype.Service;
+import solid.humank.spring4.rest.anno.configuration.QuartzJob;
 
 /**
  * Title: solid.humank.spring4.rest.anno.schedule.MyBean<br>
@@ -14,14 +22,16 @@ import org.springframework.scheduling.annotation.Scheduled;
  * @author: kim
  * @version: 1.0
  */
-public class MyBean {
-    @Scheduled(cron = "*/5 * * * * ?")
-    public void printMessage() {
-        System.out.println("I am called by Spring scheduler");
-    }
 
-    @Scheduled(cron = "*/10 * * * * ?")
-    public void kimSayHello() {
-        System.out.println("Kim says hello :D");
+@Service
+@DisallowConcurrentExecution
+public class MyBean implements Job {
+    // @Autowired
+    // private MyService myService;
+
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        // System.out.println("Message: " + myService.getHelloWorld());
+        System.out.println("Message:  yoyo ! " );
     }
 }

@@ -5,6 +5,13 @@
  */
 package solid.humank.spring4.rest.anno.configuration;
 
+import java.io.IOException;
+import java.util.Properties;
+
+import org.quartz.Trigger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -14,7 +21,9 @@ import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import solid.humank.spring4.rest.anno.schedule.NewTestBean;
+import solid.humank.spring4.rest.anno.schedule.MyBean;
+
+
 
 /**
  * Title: solid.humank.spring4.rest.anno.configuration.SchedulerConfig<br>
@@ -28,38 +37,56 @@ import solid.humank.spring4.rest.anno.schedule.NewTestBean;
 @EnableScheduling()
 public class SchedulerConfig {
 
-    //@Bean
-//    public SchedulerFactoryBean setQuartzSettingProperties(){
-//        SchedulerFactoryBean sfb = new SchedulerFactoryBean();
-//        sfb.setConfigLocation(new ClassPathResource("quartz.properties"));
-//        return sfb;
-//    }
+    @Autowired
+    private ApplicationContext applicationContext;
 
-
-    /**
-     * For Quartz usage..
-     * @return
-     */
     @Bean
-    public JobDetailFactoryBean jobDetailFactoryBean(){
-        JobDetailFactoryBean jfb = new JobDetailFactoryBean();
-        jfb.setJobClass(NewTestBean.class);
-        jfb.setGroup("kimGroup");
-        return jfb;
+    public SchedulerFactoryBean quartzScheduler() {
+        SchedulerFactoryBean quartzScheduler = new SchedulerFactoryBean();
+
+        quartzScheduler.setQuartzProperties(quartzProperties());
+        quartzScheduler.setOverwriteExistingJobs(true);
+
+        // Custom job factory of spring with DI support for @Autowired
+        AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
+        jobFactory.setApplicationContext(applicationContext);
+        quartzScheduler.setJobFactory(jobFactory);
+
+        Trigger[] triggers = {processMyJobTrigger().getObject()};
+        quartzScheduler.setTriggers(triggers);
+        return quartzScheduler;
     }
 
     @Bean
-    public CronTriggerFactoryBean cronTriggerFactoryBean(){
-        CronTriggerFactoryBean ctfb = new CronTriggerFactoryBean();
-        ctfb.setJobDetail(jobDetailFactoryBean().getObject());
-        return ctfb;
+    public JobDetailFactoryBean processMyJob() {
+        JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+        jobDetailFactory.setJobClass(MyBean.class);
+        jobDetailFactory.setDurability(true);
+        return jobDetailFactory;
     }
 
     @Bean
-    public SchedulerFactoryBean schedulerFactoryBean(){
-        SchedulerFactoryBean sfb = new SchedulerFactoryBean();
-        sfb.setConfigLocation(new ClassPathResource("quartz.properties"));
-        sfb.setTriggers(cronTriggerFactoryBean().getObject());
-        return sfb;
+    // Configure cron to fire trigger every 5 seconds
+    public CronTriggerFactoryBean processMyJobTrigger() {
+        CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+        cronTriggerFactoryBean.setJobDetail(processMyJob().getObject());
+        cronTriggerFactoryBean.setCronExpression("0/5 * * * * ?");
+        return cronTriggerFactoryBean;
+    }
+
+    @Bean
+    public Properties quartzProperties() {
+        PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+        propertiesFactoryBean.setLocation(new ClassPathResource("quartz.properties"));
+        Properties properties;
+
+        try {
+            propertiesFactoryBean.afterPropertiesSet();
+            properties = propertiesFactoryBean.getObject();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load quartz.properties", e);
+        }
+
+        return properties;
     }
 }
