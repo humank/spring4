@@ -9,11 +9,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Service;
-import solid.humank.spring4.rest.anno.configuration.QuartzJob;
 
 /**
  * Title: solid.humank.spring4.rest.anno.schedule.MyBean<br>
@@ -26,12 +22,12 @@ import solid.humank.spring4.rest.anno.configuration.QuartzJob;
 @Service
 @DisallowConcurrentExecution
 public class MyBean implements Job {
-    // @Autowired
-    // private MyService myService;
+//    @Autowired
+//    private MyService myService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         // System.out.println("Message: " + myService.getHelloWorld());
-        System.out.println("Message:  yoyo ! " );
+        System.out.println("Message:  yoyo ! ");
     }
 }
