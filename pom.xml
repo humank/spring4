@@ -14,7 +14,7 @@
     </modules>
 
     <properties>
-        <springframework.version>4.1.6.RELEASE</springframework.version>
+        <springframework.version>5.2.20.RELEASE</springframework.version>
         <quartz.version>2.2.1</quartz.version>
         <spring-data-jpa.version>1.8.0.RELEASE</spring-data-jpa.version>
         <hibernate-entitymanager.version>4.3.8.Final</hibernate-entitymanager.version>
